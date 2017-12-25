@@ -5,7 +5,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class GetWishlist {
@@ -21,31 +23,64 @@ public class GetWishlist {
     // Else it must not be on sale so get value via the class: price
 
     // My connection
-    private String url = "http://steamcommunity.com/profiles/76561198073063461/wishlist";
+    private String url = "http://steamcommunity.com/profiles/76561198073063461/wishlist/?sort=price";
+    private List<Game> wishlist;
+
 
     private GetWishlist() {
-        if (!url.equalsIgnoreCase("")) try {
-            Document doc = Jsoup.connect(url).userAgent("Chrome/63.0.3239").get();
-            for (Element s : doc.getAllElements()) {
-                // We've found each wishlist entry to scrape
-                if (s.hasClass("wishlistRow")) {
-                    Game game = new Game();
+        if (!url.equalsIgnoreCase("")) {
+            try {
+                // Setup connection
+                wishlist = new ArrayList<>();
+                Game game = null;
+                boolean gameCredsValid = true; // If any of the parsing goes wrong (i.e gameCredsValid = false), the game is not added
 
-                    // Strip the 'game_' off of ID for each game (i.e game_50130 becomes 50130). Unique identifier.
-                    Integer id = Integer.valueOf(s.id().replaceAll("[^\\d.]", ""));
-                    game.setId(id);
+                // Connect to url
+                Document doc = Jsoup.connect(url).userAgent("Chrome/63.0.3239").get();
+                for (Element s : doc.getAllElements()) {
+                    // We've found a wishlist game to scrape
+                    if (s.hasClass("wishlistRow")) {
+                        game = new Game();
 
-                    // Get each name of each game
-                    Elements children = s.children();
-                    game.setName(children.select(".ellipsis").first().text());
-                    System.out.println(game.getName());
+                        // Strip the 'game_' off of ID for each game (i.e game_50130 becomes 50130). Unique identifier.
+                        Integer id = Integer.valueOf(s.id().replaceAll("[^\\d.]", ""));
+                        game.setId(id);
+                    }
 
+                    if (s.hasClass("price") || s.hasClass("discount_final_price")) {
+                        if (game != null) {
+                            if (s.text().trim().equalsIgnoreCase("Free to Play")) {
+                                game.setCost(0);
+                            }
+                            else {
+                                String value = s.text().replaceAll("[^\\d]", "");
+                                game.setCost(Integer.parseInt(value));
+                            }
+                        }
+                    }
 
+                    if (s.hasClass("ellipsis") && !s.hasClass("wishlist_added_on")) {
+                        // Get each name of each game
+                        if (game != null && !s.text().equalsIgnoreCase("")) {
+                            game.setName(s.text());
+                            wishlist.add(game);
+                        }
+                        game = null; // This part comes last when searching the DOM so we reset the current game back to null
+                    }
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
+        for (Game g : wishlist) {
+            System.out.println(g.toString());
+        }
+
+    }
+
+    private void parseGameID() {
+
     }
 
     public static void main(String[] args) {
