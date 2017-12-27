@@ -1,3 +1,6 @@
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +40,7 @@ public class G2A {
     List<Game> toFind;
     Map<Game, List<Game>> returnedResults = new HashMap<>();
 
-    StringBuilder baseUrl = new StringBuilder("https://www.g2a.com/?search=");
+    String baseUrl = "https://www.g2a.com/?search=";
 
     public G2A() {}
 
@@ -46,20 +49,52 @@ public class G2A {
     }
 
     String nameToUrlAppend(String gameName) {
-        String url = baseUrl + gameName.replaceAll(" ", "%");
-        StringBuilder resultURL = new StringBuilder(url);
 
-        Pattern pattern = Pattern.compile("/[-.0-9]+/");
-        Matcher m = pattern.matcher(url);
-        resultURL.append(url);
-        while (m.find(baseUrl.length())) {
-            
+        // titanfall 2 = titanfall%202
+        //; titanfall      c = titanfall%20%20%20%20%20%20c
+        // titanfall 10 20 30 = titanfall%2010%2020%2030
+        // titanfall hello 1 2 3 = titanfall%20hello%201%202%203
+        // titanfall      = titanfall
+        // titanfall ! = titanfall%20!
+
+        // If nothing present after first space, then strip text down to just initial text.
+        // Else replace all spaces with %20 then whatever
+
+        StringBuilder toReturn = new StringBuilder(baseUrl);
+        boolean charAfterSpace = charAfterSpaces(gameName);
+        
+        if (charAfterSpace) {
+            toReturn = toReturn.append(gameName.replaceAll(" ", "%20"));
         }
+        else {
+            toReturn = toReturn.append(gameName.replaceAll(" ", ""));
+        }
+        return toReturn.toString();
+    }
 
+    private boolean charAfterSpaces(String gameName) {
+        boolean somethingAfterSpace = false;
+        for (int i = 1; i < gameName.length(); i++) {
+            if (Character.isSpaceChar(gameName.charAt(i)) && !Character.isSpaceChar(gameName.charAt(i-1))) {
+                // If there is a non space character that comes after this space character
+                if (nonSpace(gameName, i)) {
+                    somethingAfterSpace = true;
+                    break;
+                }
+            }
+        }
+        return somethingAfterSpace;
+    }
 
-        System.out.println();
-
-        return baseUrl + gameName.replaceAll(" ", "%");
+    private boolean nonSpace(String gameName, int i) {
+        boolean nonSpace = false;
+        for (int j = i; j < gameName.length(); j++) {
+            if (!Character.isSpaceChar(gameName.charAt(j))) {
+                nonSpace = true;
+                break;
+            }
+        }
+        return nonSpace;
     }
 
 }
