@@ -1,6 +1,7 @@
 import com.sun.istack.internal.NotNull;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.Getter;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 import static org.jsoup.Jsoup.connect;
 
-public class Wishlist {
+public class SteamWishlist {
 
     @Setter private String url = "";
 
@@ -18,10 +19,10 @@ public class Wishlist {
     public static final String chrisURL = "http://steamcommunity.com/profiles/76561198073063461/wishlist/?sort=price";
     public static final String eliURL = "http://steamcommunity.com/id/CombineCrab/wishlist/";
 
+    @Getter List<Game> wishlist;
     @NonNull private Document doc;
-    private List<Game> wishlist;
 
-    public Wishlist(String url) {
+    public SteamWishlist(String url) {
         this.url = url;
         setupConnection();
     }

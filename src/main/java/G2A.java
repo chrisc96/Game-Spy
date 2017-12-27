@@ -1,46 +1,38 @@
+import com.sun.istack.internal.NotNull;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 import jdk.nashorn.internal.runtime.regexp.joni.Regex;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.jsoup.Jsoup.connect;
+
 /**
  * Created by Chris on 26/12/2017.
  */
 public class G2A {
 
-    // Need some way to search via search bar.
-    // Once searched. Sorted by most popular. We need to ascertain which one to choose. This is involved...
+    // URL format is baseUrl + platform + endUrl + query (game name converted correctly)
+    public static final String baseUrl = "https://www.g2a.com/?";
+    public static String platform = "";
 
-    // We should ignore any titles with DLC references in them
-    // Ideally we would make it interactive so they get to choose which titles they want. But then that makes it pretty awkward.
+    // Platforms. Incorporate into platform selection for queries
+    public static final String NOPLAT = "";
+    public static final String STEAM = "p=17&";
+    public static final String ORIGIN = "p=16&";
+    public static final String UPLAY = "p=24&";
 
-    // We could select programmatically select one, show it in the list, and have a button for (this isn't the right one).
-    // This goes and shows the entire list and they select the correct one and it updates the list with the price and link. GG.
-
-    // url = https://www.g2a.com/?search= + rest
-    // e.g: https://www.g2a.com/?search=xda%20hello%201%202%203
-    // so % for every space. For a number, it's 20 + number value?
-    // i.e titanfall 2 is:
-        // https://www.g2a.com/?search=titanfall%202
-    // i.e titanfall 10 is:
-        // https://www.g2a.com/?search=titanfall%2010
-            // So concatenate the numbers rather than add.
-
-    // No results = id: jq_noproducts class: notice_msg and display != none
-    // Block of results are contained in: search-results class.
-    // a result has class: product-small2
-
-    // name is product_name_link, get text of this.
-    // price of item at cheapest is mp-pi-price-min
+    public static final String endURL = "search=";
 
     List<Game> toFind;
-    Map<Game, List<Game>> returnedResults = new HashMap<>();
-
-    String baseUrl = "https://www.g2a.com/?search=";
+    Map<Game, Game> returnedResults = new HashMap<>();
 
     public G2A() {}
 
@@ -48,19 +40,73 @@ public class G2A {
         this.toFind = toFind;
     }
 
-    String nameToUrlAppend(String gameName) {
+    void getG2APrices() {
+        for (Game g: toFind) {
+            returnedResults.put(g, getG2APrice(g));
+        }
+        System.out.println(returnedResults);
+    }
 
-        // titanfall 2 = titanfall%202
-        //; titanfall      c = titanfall%20%20%20%20%20%20c
-        // titanfall 10 20 30 = titanfall%2010%2020%2030
-        // titanfall hello 1 2 3 = titanfall%20hello%201%202%203
-        // titanfall      = titanfall
-        // titanfall ! = titanfall%20!
+    Game getG2APrice(Game g) {
+        try {
+            Document doc = connect(gameNameToUrl(g.getName())).userAgent("Chrome/63.0.3239").get();
+            boolean productsMatchName = false;
+            for (Element e: doc.getAllElements()) {
+                if (e.id().equals("jq_noproducts")) {
+                    // If the no products div isn't visible, there must be results
+                    String style = e.attr("style"); // getting the inline style element
+                    if (style.contains("none")) {
+                        productsMatchName = true;
+                        break;
+                    }
+                }
+            }
+            if (productsMatchName) {
+                @NotNull Game game = null;
+                Element e = doc.body().select("div#tmp_filters_products").first();
+                for (Element child : e.getAllElements()) {
+                    // Found a result, lets only add one result (via most popular for now)
+                    if (child.hasClass("product_name_link")) {
+                        game = new Game();
+                        game.setId(g.getId());
+                        game.setName(e.text());
+                    }
 
-        // If nothing present after first space, then strip text down to just initial text.
-        // Else replace all spaces with %20 then whatever
+                    if (child.hasClass("mp-pi-price-min")) {
+                        String value = e.text().replaceAll("[^\\d]", "");
+                        game.setCost(Integer.parseInt(value));
+                        return game;
+                    }
+                }
+            }
+            // No results that matched the game to search against... oh no
+            else {
+                return null;
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-        StringBuilder toReturn = new StringBuilder(baseUrl);
+    /**
+     * Given a normal game name, converts it to a g2a search query to specifically request
+     * different types of results. I.E global keys, steam key, non steam key etc.
+     * @param gameName
+     * @return
+     */
+    String gameNameToUrl(String gameName) {
+        StringBuilder searchQuery = new StringBuilder(gameName);
+        if (!gameName.contains("Global")) {
+            searchQuery.append(" Global");
+        }
+        //System.out.println(searchQueryToUrl(searchQuery.toString()));
+        return searchQueryToUrl(searchQuery.toString());
+    }
+
+    private String searchQueryToUrl(String gameName) {
+        StringBuilder toReturn = new StringBuilder(baseUrl + platform + endURL);
         boolean charAfterSpace = charAfterSpaces(gameName);
         
         if (charAfterSpace) {
@@ -96,5 +142,4 @@ public class G2A {
         }
         return nonSpace;
     }
-
 }
