@@ -26,7 +26,6 @@ public class Wishlist {
         setupConnection();
     }
 
-
     private void setupConnection() {
         try {
             if (!url.equalsIgnoreCase("")) {
@@ -42,7 +41,7 @@ public class Wishlist {
     }
 
     // Does all the grunt work
-    private void retrieveWishlist() {
+    void retrieveWishlist() {
         wishlist = new ArrayList<>();
 
         @NotNull Game game = null;
@@ -92,7 +91,7 @@ public class Wishlist {
         }
     }
 
-    private void printWishlist() {
+    void printWishlist() {
         for (Game g : wishlist) {
             System.out.println(g.toString());
         }
@@ -108,11 +107,5 @@ public class Wishlist {
 
     private void printTotalCosts() {
         System.out.println(getTotalCosts());
-    }
-
-    public static void main(String[] args) {
-        Wishlist two = new Wishlist(eliURL);
-        two.retrieveWishlist();
-        two.printWishlist();
     }
 }
