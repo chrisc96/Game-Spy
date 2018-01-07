@@ -63,7 +63,7 @@ public class G2A {
             }
             if (productsMatchName) {
                 @NotNull Game game = null;
-                Element e = doc.body().select("div#tmp_filters_products").first();
+                Element e = doc.body().select("#tmp_filters_products").first();
                 for (Element child : e.getAllElements()) {
                     // Found a result, lets only add one result (via most popular for now)
                     if (child.hasClass("product_name_link")) {
@@ -108,7 +108,7 @@ public class G2A {
     private String searchQueryToUrl(String gameName) {
         StringBuilder toReturn = new StringBuilder(baseUrl + platform + endURL);
         boolean charAfterSpace = charAfterSpaces(gameName);
-        
+
         if (charAfterSpace) {
             toReturn = toReturn.append(gameName.replaceAll(" ", "%20"));
         }
