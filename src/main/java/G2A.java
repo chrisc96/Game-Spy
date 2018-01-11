@@ -112,6 +112,21 @@ public class G2A {
     }
 
     private Integer getCostWithID(Integer idOfGame) {
+        try {
+            JSONObject json = new JSONObject(IOUtils.toString(new URL(basePricingURL + idOfGame), Charset.forName("UTF-8")));
+
+            JSONArray docs = (JSONArray) json.get("docs");
+            JSONObject info = (JSONObject) docs.get(0);
+
+            for (Map.Entry<String, Object> entry : info.toMap().entrySet()) {
+                if (entry.getKey().equalsIgnoreCase("id")) {
+                    return (Integer) entry.getValue();
+                }
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
         return -1;
     }
 
