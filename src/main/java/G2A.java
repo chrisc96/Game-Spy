@@ -1,6 +1,7 @@
 import jdk.nashorn.internal.parser.JSONParser;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.nodes.Document;
 
@@ -14,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static org.jsoup.Jsoup.connect;
 
@@ -32,13 +34,15 @@ public class G2A {
     public G2A() {}
 
     public G2A(List<Game> toFind) {
-        this.toFind = new ArrayList<>(toFind);
+        this.toFind = new ArrayList<>();
+        for (int i = 0; i < toFind.size(); i++) {
+            this.toFind.add(new Game(toFind.get(i)));
+        }
     }
 
     void getG2APrices() {
-        for (Game g: toFind) {
+        for (Game g: this.toFind) {
             returnedResults.put(g, getG2APrice(g));
-            break;
         }
         System.out.println(returnedResults);
     }
@@ -49,8 +53,7 @@ public class G2A {
 
         if (idOfGame == -1 || costOfGame == -1) return null;
 
-        g.setCost(costOfGame);
-        return g;
+        return new Game(idOfGame, g.getName(), costOfGame);
     }
 
     public Integer getIDFromLucene(String gameName) {
@@ -111,21 +114,36 @@ public class G2A {
         }
     }
 
+    /**
+     * Returns cost of item associated by an ID catalogued.
+     * Value returned in cents.
+     * @param idOfGame
+     * @return
+     */
     private Integer getCostWithID(Integer idOfGame) {
         try {
             JSONObject json = new JSONObject(IOUtils.toString(new URL(basePricingURL + idOfGame), Charset.forName("UTF-8")));
+            JSONObject info;
+            try {
+                info = (JSONObject) json.get("a");
+            }
+            catch (JSONException e) {
+                return -1;
+            }
 
-            JSONArray docs = (JSONArray) json.get("docs");
-            JSONObject info = (JSONObject) docs.get(0);
-
+            if (info == null) return -1;
             for (Map.Entry<String, Object> entry : info.toMap().entrySet()) {
-                if (entry.getKey().equalsIgnoreCase("id")) {
-                    return (Integer) entry.getValue();
+                if (entry.getKey().startsWith("k_")) {
+                    HashMap obj = (HashMap) entry.getValue();
+                    // Return without g2a shield cost
+                    String price = (String) obj.get("f");
+                    price = price.replaceAll("[^\\d]", "");
+                    return Integer.parseInt(price);
                 }
             }
         }
         catch (IOException e) {
-            e.printStackTrace();
+            return -1;
         }
         return -1;
     }
@@ -137,9 +155,15 @@ public class G2A {
      * @return
      */
     String gameNameModify(String gameName) {
+        System.out.println(gameName);
         StringBuilder searchQuery = new StringBuilder(gameName);
         if (!gameName.contains("Global")) {
             searchQuery.append(" Global");
+        }
+        if (gameName.contains("™")) {
+            String after = searchQuery.substring(searchQuery.indexOf("™") + 1, searchQuery.length());
+            searchQuery = new StringBuilder(searchQuery.substring(0, searchQuery.indexOf("™")) + after);
+            System.out.println(searchQuery);
         }
         return searchQuery.toString();
     }

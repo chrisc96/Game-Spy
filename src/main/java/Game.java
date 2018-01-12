@@ -13,6 +13,11 @@ public class Game {
         this.name = name;
         this.cost = cost;
     }
+    public Game(Game g) {
+        this.id = g.id;
+        this.name = g.name;
+        this.cost = g.cost;
+    }
 
     @Override
     public String toString() {
