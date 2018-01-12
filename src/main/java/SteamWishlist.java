@@ -18,6 +18,11 @@ public class SteamWishlist {
     // Test wishlists
     public static final String chrisURL = "http://steamcommunity.com/profiles/76561198073063461/wishlist/?sort=price";
     public static final String eliURL = "http://steamcommunity.com/id/CombineCrab/wishlist/";
+    public static final String shaunURL = "http://steamcommunity.com/id/darknecessities/wishlist";
+    public static final String voxxURL = "http://steamcommunity.com/id/Voxxor/wishlist";
+    public static final String doozyURL = "http://steamcommunity.com/id/dusiyt/wishlist\n"; // <- He doesn't have one. Use to test
+    public static final String natoURL = "http://steamcommunity.com/profiles/76561198112553759/wishlist";
+    public static final String connorURL = "http://steamcommunity.com/profiles/76561198122101578/wishlist";
 
     @Getter List<Game> wishlist;
     @NonNull private Document doc;

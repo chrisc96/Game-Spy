@@ -4,7 +4,7 @@
 public class GameCompare {
 
     public static void main(String[] args) {
-        SteamWishlist two = new SteamWishlist(SteamWishlist.chrisURL);
+        SteamWishlist two = new SteamWishlist(SteamWishlist.eliURL);
         two.retrieveWishlist();
         two.printWishlist();
 
