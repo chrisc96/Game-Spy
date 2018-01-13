@@ -9,8 +9,4 @@ Things may change. All template holders.
 
 Star me, fork me, test me.
 
-If you want to help test, I'm asking for peoples steam's wishlists here:
-https://www.reddit.com/r/Steam/comments/7ptk5t/developer_needing_data_please_give_me_your_steam/
-
-
 Cheers!
