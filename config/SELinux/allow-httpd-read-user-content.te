@@ -1,0 +1,16 @@
+
+module allow-httpd-read-user-content 1.0;
+
+require {
+	type httpd_t;
+	type user_home_t;
+	class file { open read };
+}
+
+#============= httpd_t ==============
+
+#!!!! This avc can be allowed using the boolean 'httpd_read_user_content'
+allow httpd_t user_home_t:file open;
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t user_home_t:file read;
