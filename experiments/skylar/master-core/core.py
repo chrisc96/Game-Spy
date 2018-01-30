@@ -9,10 +9,10 @@ import os.path
 import Gamespy
 
 
-# Begin
+# Begins
 if __name__ == "__main__":
     try:
-        # Get our instance arguments
+        # Get our instance argumentsjssss
         parser = argparse.ArgumentParser(description="Game Spy Master Scraper")
         parser.add_argument("-config-path", type=str, default="../config")
 
