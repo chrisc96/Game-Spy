@@ -14,7 +14,23 @@ create table `game-titles` (
 create table `steam-apps` (
     `id` int primary key auto_increment,
     `game-titles-id` int,
-    `app-type` varchar(16)
+    `app-type` varchar(16) not null,
+
+    `name` varchar(128),
+    `required-age` int,
+    `is-free` bool,
+    `detailed-description` text,
+    `about-the-game` text,
+    `short-description` varchar(128),
+    `supported-languages` varchar(128),
+    `header-image` varchar(128),
+    `website` varchar(128),
+    `pc-requirements` text,
+    `mac-requirements` text,
+    `linux-requirements` text,
+    `developers` varchar(64),
+    `publishers` varchar(64),
+    
 );
 
 /*
