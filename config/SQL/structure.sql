@@ -1,3 +1,7 @@
+drop database if exists `game-spy-dev`;
+create database `game-spy-dev`;
+use `game-spy-dev`;
+
 /*
  * Main game titles
  */
@@ -18,7 +22,7 @@ create table `steam-apps` (
 
     `name` varchar(128),
     `required-age` int,
-    `is-free` bool,
+    `is-free` boolean,
     `detailed-description` text,
     `about-the-game` text,
     `short-description` varchar(128),
@@ -30,7 +34,17 @@ create table `steam-apps` (
     `linux-requirements` text,
     `developers` varchar(64),
     `publishers` varchar(64),
-    
+
+    `price-currency` varchar(16),
+    `price-initial` int,
+    `price-final` int,
+    `discount-percent` int,
+
+    `platform-windows` boolean,
+    `platform-mac` boolean,
+    `platform-linux` boolean
+
+
 );
 
 /*
