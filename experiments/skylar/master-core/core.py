@@ -31,6 +31,9 @@ if __name__ == "__main__":
         asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
         loop = asyncio.get_event_loop()
 
+        # Connect to Redis
+        loop.run_until_complete(Gamespy.preconnect_redis())
+
         # Start up a task for each of our scrapers
         tasks = []
         for scraper in Gamespy.SCRAPERS:
@@ -38,7 +41,7 @@ if __name__ == "__main__":
 
             for i in range(instance.WORKER_LIMIT):
                 tasks.append(asyncio.ensure_future(instance.worker()))
-
+        
         # Wait for all tasks to complete
         loop.run_until_complete(asyncio.wait(tasks))
         loop.close()
