@@ -15,16 +15,17 @@ if __name__ == "__main__":
         # Get our instance argumentsjssss
         parser = argparse.ArgumentParser(description="Game Spy Master Scraper")
         parser.add_argument("-config-path", type=str, default="../config")
+        parser.add_argument("--populate-redis-steamapps", action="store_true")
 
-        args = parser.parse_args()
+        Gamespy.args = parser.parse_args()
 
 
         # Make sure our config files exist
-        if not os.path.isfile(args.config_path + "/mysql.json"):
-            exit(args.config_path + "/mysql.json Could not be found")
+        if not os.path.isfile(Gamespy.args.config_path + "/mysql.json"):
+            exit(Gamespy.args.config_path + "/mysql.json Could not be found")
 
-        if not os.path.isfile(args.config_path + "/redis.json"):
-            exit(args.config_path + "/redis.json Could not be found")
+        if not os.path.isfile(Gamespy.args.config_path + "/redis.json"):
+            exit(Gamespy.args.config_path + "/redis.json Could not be found")
 
 
         # Start up AsyncIO
@@ -41,7 +42,7 @@ if __name__ == "__main__":
 
             for i in range(instance.WORKER_LIMIT):
                 tasks.append(asyncio.ensure_future(instance.worker()))
-        
+
         # Wait for all tasks to complete
         loop.run_until_complete(asyncio.wait(tasks))
         loop.close()

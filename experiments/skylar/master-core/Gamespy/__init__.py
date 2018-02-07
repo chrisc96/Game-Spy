@@ -5,6 +5,7 @@ from Gamespy.SteamScraper import SteamScraper
 
 ROOT_DIR = "."
 SCRAPERS = [SteamScraper]
+args = None
 
 redisPool = None
 
