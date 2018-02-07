@@ -18,7 +18,7 @@ timeWhenStarted = time.time()
 
 
 def fetchAppInformation(app):
-		with urllib.request.urlopen("http://store.steampowered.com/api/appdetails?appids=%i&cc=us" % app["appid"]) as fh:
+		with urllib.request.urlopen("http://store.steampowered.com/api/appdetails?appids=%i&cc=us&key=CA460E3690A493219F7682B4FC48CEDF" % app["appid"]) as fh:
 				appInformation = fh.read()
 
 		appInformation = json.loads(appInformation)
@@ -44,7 +44,7 @@ def fetchAllSteamApps():
                 # logging.save(original exception details)
                 print("Could not access Steam's App List")
                 # raise Exception("Could not access Steam's App List") from None
-				
+
 
 
 # Feed masterQueue with jobs
@@ -55,8 +55,8 @@ while steamApps:
 	try:
 		print("Polling ID %s" % steamApps[0])
 		appInformation = fetchAppInformation(steamApps[0])
-		
-		
+
+
 		if appInformation and appInformation["type"] == "game":  # Is a game
 			if appInformation["is_free"]:
 				print(appInformation["name"], "is Free!", appInformation["steam_appid"])
@@ -67,17 +67,17 @@ while steamApps:
 			else:
 				floatPrice = round(int(appInformation["price_overview"]["final"]) / 100, 2)
 				print(appInformation["name"], "$%.2f (USD)" % floatPrice)
-				
+
 		else:
 			print("Not a game, but polled this ID")
-		
+
 		# Requst succeeded, remove element from array and sleep
 		steamApps.remove(steamApps[0])
 		time.sleep(0.85)
-		
+
 	except urllib.request.HTTPError:
 		print("An error occured, sleeping for 60 seconds")
 		time.sleep(60)
-		
+
 	except:
 		pass
