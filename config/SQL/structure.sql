@@ -76,6 +76,10 @@ create table `g2a-apps` (
     `header-image` varchar(128),
     `referral-url` varchar(256), -- format is https://www.g2a.com + referral-url
 
+    `detailed-description` text,
+    `about-the-game` text,
+    `short-description` varchar(128),
+
     `cheapest-price` float,
     `cheapest-price-with-shield` float, -- shield is g2a's protection server. Includes a fee
     `platform-id` int NOT null -- if the key is for steam activation/uplay/etc
@@ -92,12 +96,13 @@ create table `media-game-listings` (
 );
 
 /*
-    Table for media (screenshots) references and
-    games that have a specific platform activation method
+    Table for games that have a specific platform activation
+    methods and for media that comes from specfic platforms
 */
 create table `platforms` (
     `id` int primary key auto_increment,
-    `name` varchar(32)
+    `name` varchar(32),
+    `data-preference` int not null -- we choose what listing data to show via this value (lowest selected first)
 );
 
 /*
