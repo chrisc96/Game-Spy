@@ -12,8 +12,8 @@ timeWhenStarted = time.time()
 WORKER_COUNT = 15
 
 '''
-Returns the 'numFound' value via g2a api. This represents the number of pages
-of JSON data that G2A has indexed. Useful for scraping all their data.
+'' Returns the 'numFound' value via g2a api. This represents the number of
+'' app listings that G2A has indexed. Useful to know for scraping all their data.
 '''
 def getNumListings():
     try:
@@ -35,11 +35,8 @@ def getNumListings():
 
 
 '''
-Returns a JSON formatted list of g2a listings
-(presuming no errors).
-Let's say one page has 10 listings. At the start, listingPK == 0.
-When we parse the page with ten listings, this method should be called again
-with a listingPK of 10 to make sure we start where we left off.
+'' Returns a single page of JSON g2a app listings
+'' @param listingPK int represents the start appID of that page
 '''
 def fetchG2APage(listingPK):
     try:
@@ -54,6 +51,11 @@ def fetchG2APage(listingPK):
     except:
         pass
 
+'''
+'' Returns the price (exc. shield for now) in the default currency (???)
+'' of that game.
+'' @param idNum int the ID number of the game to get the price of
+'''
 def fetchG2APriceByID(idNum):
     try:
         request = urllib.request.Request("https://www.g2a.com/marketplace/product/auctions/?id=%i" % idNum)
@@ -69,6 +71,10 @@ def fetchG2APriceByID(idNum):
         pass
 
 
+'''
+'' Each thread's DOWORK function. Power in numbers.
+'' Yay for threads.
+'''
 def worker(i, taskQueue):
     if taskQueue.empty():
         pass
@@ -85,14 +91,20 @@ def worker(i, taskQueue):
             id = int(listing["id"])
             name = listing["name"]
 
+            # get name, id, all the other juicy details here via same method as above -> listing["jsonTag"]
+
             price = fetchG2APriceByID(id)
+
             processedSoFar = numListings - (taskQueue.qsize() - 1)
             print("(%i)    Game listing with ID of %i costs %.2f" % (processedSoFar, id, price))
 
+
+'''
+'' Main Execution. Sets up / starts multi-threading task
+'''
 urlQueue = queue.Queue()
 numListings = getNumListings()
 workerList  = []
-processedSoFar = 0
 
 # Populate queue with ID's for workers to utilise
 for id in range(0, numListings):
@@ -107,23 +119,3 @@ for i in range(WORKER_COUNT):
 # After all tasks have been completed, peacefully terminate the workers
 for i in range(WORKER_COUNT):
 	urlQueue.put(None)
-
-'''
-numListings = getNumListings()
-currListing = 0
-
-while (currListing < numListings):
-	pageInfo = fetchG2APage(currListing)
-	pageInfo = pageInfo["docs"] # remove numFound, start, docs tags
-
-	# parse all N games on the page, then adjust gamesPerPage to reflect N parsed games
-	gamesPerPage = 0
-	while (gamesPerPage < len(pageInfo)):
-		info = pageInfo[gamesPerPage]
-		id = info["id"]
-		price = fetchG2APriceByID(id)
-		print(price)
-		gamesPerPage += 1
-
-	currListing += gamesPerPage
-'''
