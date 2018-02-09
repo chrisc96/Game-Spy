@@ -9,7 +9,7 @@ import threading
 # Variables for rates of processing
 timeWhenStarted = time.time()
 
-WORKER_COUNT = 10
+WORKER_COUNT = 15
 
 '''
 Returns the 'numFound' value via g2a api. This represents the number of pages
@@ -70,28 +70,29 @@ def fetchG2APriceByID(idNum):
 
 
 def worker(i, taskQueue):
-    for id in iter(taskQueue.get, None):
-        # mutable stringbuilding
-        l = []
-        l.append("https://www.g2a.com/lucene/search/filter?=&start=")
-        l.append(id)
-        url = ''.join(l)
+    if taskQueue.empty():
+        pass
+    else:
+        for id in iter(taskQueue.get, None):
+            # mutable stringbuilding
+            l = []
+            l.append("https://www.g2a.com/lucene/search/filter?=&start=")
+            l.append(id)
+            url = ''.join(l)
 
-        pageInfo = fetchG2APage(int(id))
-        listing = pageInfo["docs"][0] # remove numFound, start, docs tags
-        id = int(listing["id"])
-        name = listing["name"]
+            pageInfo = fetchG2APage(int(id))
+            listing = pageInfo["docs"][0] # remove numFound, start, docs tags
+            id = int(listing["id"])
+            name = listing["name"]
 
-        price = fetchG2APriceByID(id)
-        print("Game listing with ID of %i costs %.2f" % (id, price))
-
-
-
-
+            price = fetchG2APriceByID(id)
+            processedSoFar = numListings - (taskQueue.qsize() - 1)
+            print("(%i)    Game listing with ID of %i costs %.2f" % (processedSoFar, id, price))
 
 urlQueue = queue.Queue()
 numListings = getNumListings()
 workerList  = []
+processedSoFar = 0
 
 # Populate queue with ID's for workers to utilise
 for id in range(0, numListings):
