@@ -11,4 +11,7 @@ redisPool = None
 
 async def preconnect_redis():
     global redisPool
-    redis = await aioredis.create_pool("redis://localhost")
+    redisPool = await aioredis.create_pool(
+        "redis://localhost",
+        minsize = 5,
+        maxsize = 10)

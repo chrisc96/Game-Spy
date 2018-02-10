@@ -41,7 +41,7 @@ if __name__ == "__main__":
             instance = scraper()
 
             for i in range(instance.WORKER_LIMIT):
-                tasks.append(asyncio.ensure_future(instance.worker()))
+                tasks.append(asyncio.ensure_future(instance.init()))
 
         # Wait for all tasks to complete
         loop.run_until_complete(asyncio.wait(tasks))
