@@ -37,9 +37,9 @@ if __name__ == "__main__":
 
         # Start up a task for each of our scrapers
         tasks = []
-        for scraper in Gamespy.SCRAPERS:
-            for i in range(instance.WORKER_LIMIT):
-                instance = scraper()
+        for Scraper in Gamespy.SCRAPERS:
+            for i in range(Scraper.WORKER_LIMIT):
+                instance = Scraper()
                 tasks.append(asyncio.ensure_future(instance.init()))
 
         # Wait for all tasks to complete
