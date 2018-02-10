@@ -1,4 +1,5 @@
-import asyncio, aioredis
+import asyncio
+import aioredis
 
 from Gamespy.BaseScraper import BaseScraper
 from Gamespy.SteamScraper import SteamScraper
@@ -11,7 +12,7 @@ redisPool = None
 
 async def preconnect_redis():
     global redisPool
-    redisPool = await aioredis.create_pool(
+    redisPool = await aioredis.create_redis_pool(
         "redis://localhost",
         minsize = 5,
         maxsize = 10)

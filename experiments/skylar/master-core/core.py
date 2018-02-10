@@ -45,6 +45,11 @@ if __name__ == "__main__":
 
         # Wait for all tasks to complete
         loop.run_until_complete(asyncio.wait(tasks))
+
+        # Close Redis Pool
+        Gamespy.redisPool.close()
+        loop.run_until_complete(Gamespy.redisPool.wait_closed())
+
         loop.close()
 
     except KeyboardInterrupt:
