@@ -1,12 +1,22 @@
-# GameCompare
-Sick of trying to figure out whether that steam sale is actually any good? (Yeah we know, they're not what they used to be). Look no further.
+# [Uni Taken Over, On Hold]
 
-GameCompare uses your Steam wishlist and compares against major third party game resellers to find you the best deal without the added effort.
+GameCompare aims to support more indexed websites that any game price comparison website out there. We aim to save you the most money possible. We know those steam sales aren't the same anymore.
 
-Currently website is not live. Test systems and proof of concept are being written in Java. Will like be converted to JS or made into web app once proof of concept is complete.
+Competition:
+* Razer Deals doesn't support enough websites, often not the cheapest price.
+* IsThereAnyDeal badly designed website. No proper systems in place. UPDATE: Currently down indefinitely.
+* CheapShark doesn't support enough websites. Bad design, not user friendly. No integrated systems (like wishlists)
 
-Things may change. All template holders.
+What we will be offering that no one else does:
+* G2A Integration. Largest 3rd party game reseller online.
+* Largest support for price comparison websites
 
-Star me, fork me, test me.
+Other features:
+* Mobile friendly design
+* Largest support of game website resellers
+* Steam, GoG Wishlist integration
+* And more.
 
-Cheers!
+Currently the website is in development. University and other commitments have taken over, but this will continue to be created when time allows.
+
+Stay tuned.
