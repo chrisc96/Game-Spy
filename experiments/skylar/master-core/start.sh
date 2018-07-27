@@ -1,0 +1,1 @@
+python3.6 core.py -config-path "../../../config";

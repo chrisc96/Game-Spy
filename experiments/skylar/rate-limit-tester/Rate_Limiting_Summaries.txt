@@ -1,0 +1,11 @@
+Documentation for rate limiting summary:
+
+Steam:
+
+Including 0.85s sleeps and 60s timeouts if HTTP response refused
+we can do about 300 requests every 5 minutes... slow. Distribute over
+multiple VPS. Botnet...
+
+G2A:
+
+~ 7 requests per second maximum with 15 workers. No timeout issues.
