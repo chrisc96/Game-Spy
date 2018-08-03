@@ -17,6 +17,6 @@ Other features:
 * Steam, GoG Wishlist integration
 * And more.
 
-Currently the website is in development. University and other commitments have taken over, but this will continue to be created when time allows.
+Currently the website is in development (in development page is present). University and other commitments have taken over, but this will continue to be created when time allows.
 
 Stay tuned.
